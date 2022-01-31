@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.FaqMapper">
+
+<select id="maxNum" resultType="int">
+	select nvl(max(f_num),0) from faq
+</select>
+<insert id="insertData" parameterType="com.spring.boot.dto.FaqDTO">
+	insert into faq (f_num, ques, ans, faq_cat)
+	values (#{f_num},#{ques},#{ans},#{faq_cat})
+</insert>
+
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.FaqDTO">
+	select f_num, ques, ans, faq_cat
+	from faq 
+	order by f_num asc 
+</select>
+
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.FaqDTO">
+	select f_num, ques, ans, faq_cat
+	from faq where f_num=#{f_num} 
+</select>
+
+
+
+
+
+
+</mapper>

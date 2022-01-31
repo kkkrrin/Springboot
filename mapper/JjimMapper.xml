@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.JjimMapper">
+
+<select id="maxNum_jjim" resultType="int">
+	select nvl(max(num),0) from jjim
+</select>
+
+<insert id="insertData_jjim" parameterType="com.spring.boot.dto.JjimDTO">
+    insert into jjim (productNum,productName,price) values (#{productNum},#{productName},#{price})
+</insert>
+
+<select id="getDataCount_jjim" parameterType="hashMap" resultType="int">
+    select nvl(count(*),0) from jjim
+</select>
+
+<select id="getLists_jjim" parameterType="hashMap" resultType="com.spring.boot.dto.JjimDTO">
+    select * from (select rownum rnum, data.* from (select productNum,productName,price
+     from jjim order by productNum desc) data)
+<![CDATA[
+    where rnum>=#{start} and rnum<=#{end}
+]]>
+</select>
+
+<select id="getReadData_jjim" parameterType="int" resultType="com.spring.boot.dto.JjimDTO">
+    select productNum,productName,price from jjim where productNum=#{productNum}
+</select>
+
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.NoticeMapper">
+
+<select id="maxNum" resultType="int">
+	select nvl(max(n_num),0) from pet_notice
+</select>
+
+<insert id="insertData" parameterType="com.spring.boot.dto.NoticeDTO">
+	insert into pet_notice (n_num, n_title, n_content, n_created)
+	values (#{n_num},#{n_title},#{n_content},#{n_created})
+</insert>
+
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.NoticeDTO">
+	select n_num, n_title, n_content, to_char(n_created,'yyyy.MM.dd') n_created
+	from pet_notice 
+	order by n_created desc 
+</select>
+
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.NoticeDTO">
+	select n_num, n_title, n_content, to_char(n_created,'yyyy.MM.dd') n_created
+	from pet_notice where n_num=#{n_num} 
+</select>
+
+
+
+</mapper>

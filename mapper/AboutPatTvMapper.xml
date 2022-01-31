@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.AboutPatTvMapper">
+
+<select id="maxNum" resultType="int">
+	select nvl(max(num),0) from aboutvideo
+</select>
+
+<insert id="insertData" parameterType="com.spring.boot.dto.AboutPatTvDTO">
+	insert into aboutvideo (num,title,name,videoinfo,category,subcategory,
+	tag,thumFileName,thumoriFileName,vidFileName,vidoriFileName,hitCount,created,videoUrl,likes,
+	link) values
+	 (#{num},#{title},#{name},#{videoinfo},#{category},#{subcategory},
+	 #{tag},#{thumFileName},#{thumoriFileName},#{vidFileName},
+	 #{vidoriFileName},0,sysdate,#{videoUrl},#{likes},#{link})
+</insert>
+
+<select id="getDataCount" resultType="int" parameterType="hashMap">
+	select nvl(count(*),0) from aboutvideo where category like '%' || #{searchValue} || '%'
+</select>
+
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.AboutPatTvDTO">
+	select * from (
+	select rownum rnum, data.* from (
+	select num, title, tag, thumFileName, videoinfo, category, subcategory, name, hitCount, videoUrl, likes
+	from aboutvideo where ${searchKey} like '%' || #{searchValue} || '%'
+	order by num desc) data)
+<![CDATA[	
+	where rnum>=#{start} and rnum<=#{end} 
+]]>
+</select>
+
+<select id="getLists2" parameterType="hashMap" resultType="com.spring.boot.dto.AboutPatTvDTO">
+	select * from (
+	select rownum rnum, data.* from (
+	select num, title, tag, thumFileName, videoinfo, category, subcategory, name, hitCount, videoUrl, likes
+	from aboutvideo order by num desc) data)
+</select>
+
+<select id="getAllList" parameterType="hashMap" resultType="com.spring.boot.dto.AboutPatTvDTO">
+	select * from (
+	select rownum rnum, data.*from (
+	select num,title,tag,thumFileName,category,subcategory,name,videoUrl
+	from aboutvideo	order by num desc) data)
+<![CDATA[	
+	where rnum>=#{start} and rnum<=#{end} 
+]]>
+
+</select>
+
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.AboutPatTvDTO">
+	select num,name,title,videoinfo,vidFileName,category,subcategory,thumFileName,created,videoUrl from aboutvideo where num=#{num}
+</select>
+
+<update id="updateHitCount" parameterType="int">
+	update aboutvideo set hitCount=hitCount+1 where num=#{num}
+</update>
+
+<update id="updateData" parameterType="com.spring.boot.dto.AboutPatTvDTO">
+	update aboutvideo set name=#{name},title=#{title},videoinfo=#{videoinfo},category=#{category},subcategory=#{subcategory}
+	thumFileName=#{thumFileName},vidFileName=#{vidFileName} where num=#{num}
+</update>
+
+<delete id="deleteData" parameterType="int">
+	delete aboutvideo where num=#{num}
+</delete>
+
+<!-- 유저 정보 -->
+
+
+<!-- 댓글 -->
+<select id="video_commentMaxNum" resultType="int">
+	select nvl(max(num),0) from videoComment
+</select>
+<insert id="video_comment_insert" parameterType="com.spring.boot.dto.VideoCommDTO">
+	insert into videoComment values (#{num},#{userId},#{userNick},#{communityNum},#{contents},sysdate)
+</insert>
+<delete id="video_comment_delete" parameterType="hashMap">
+	delete videoComment where community Num=#{communityNum} and userId=#{userId}
+</delete>
+<select id="video_comment_Lists" parameterType="hashMap" resultType="com.spring.boot.dto.VideoCommDTO">
+	select * from (select rownum rnum,data.* from(select num, userId,userNick,communityNum,contents,created from videoComment where communityNum
+	=#{communityNum} order by num) data)
+</select>
+<select id="video_comment_count" resultType="int">
+	select count(*) from videoComment where communityNum=#{communityNum}
+</select>
+<update id="video_comment_update" parameterType="com.spring.boot.dto.VideoCommDTO">
+	update videoComment set contents=#{contents}
+</update>
+
+
+<update id="updateHitCount_Commu" parameterType="int">
+update community set hitCount = hitCount + 1 where num = #{num} 
+</update>
+
+
+<!-- 유저 정보 가져오는 부분 -->
+
+
+<select resultType="com.spring.boot.dto.MypageDTO" id="getReadUserData" parameterType="String">
+	select num ,userId ,userPwd ,userNick, userMail, to_char(created, 'YYYY-MM-DD'), saveName, originalName , grade , point , userTag 
+	from USERFORM where userId=#{userId}
+ </select>
+
+<select resultType="com.spring.boot.dto.MypageDTO" id="getUserLists" parameterType="hashMap">
+select * from (select rownum rnum, data.* from(select num ,userId ,userPwd ,userNick, userMail, 
+to_char(created, 'YYYY-MM-DD'), saveName, originalName , grade , point , userTag from userForm order 
+by num desc) data) 
+</select>
+
+<!-- 찜 -->
+<select id="tv_zzimMaxNum" resultType="int">
+	select nvl(max(snum), 0) from zzimList
+</select>
+<insert id="tv_zzim_insert" parameterType="com.spring.boot.dto.ZzimListDTO">
+	insert into zzimList values(#{snum}, #{num}, #{categoryName}, #{userId})
+</insert>
+<delete id="tv_zzim_delete" parameterType="hashMap">
+	delete zzimList where num=#{num} and userId=#{userId}
+</delete>
+<select id="getTvZzimLists" parameterType="hashMap" resultType="com.spring.boot.dto.ZzimListDTO">
+	
+	select * from (
+	select rownum rnum, data.* from(
+	select snum, num, categoryName, userId
+	from zzimList where userId = #{userId} order by snum ) data)
+	
+</select>
+
+
+</mapper>

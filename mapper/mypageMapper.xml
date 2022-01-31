@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.MypageMapper">
+
+
+<select id="maxNum" resultType="int">
+	select nvl(max(num),0) from userForm
+</select>
+
+<select id="petmaxNum" resultType="int">
+	select nvl(max(num),0) from myPet
+</select>
+
+<select id="inquiryNum" resultType="int">
+	select nvl(max(num),0) from inquiry
+</select>
+
+<select id="addressNum" resultType="int">
+	select nvl(max(num),0) from userAddress
+</select>
+
+<select id="cardmaxNum" resultType="int">
+	select nvl(max(num),0) from userCard
+</select>
+
+<select id="zzimmaxNum" resultType="int">
+	select nvl(max(snum),0) from zzimList
+</select>
+
+<select id="wishListmaxNum" resultType="int">
+	select nvl(max(snum),0) from wishList
+</select>
+
+<!-- 일단 회원가입 -->
+
+<!-- Test -->
+<insert id="createUser" parameterType="com.spring.boot.dto.MypageDTO">
+	insert into myPage (userId,userName,userPwd,userTel,userNick,userMail,userTag,profileImg) 
+	values (#{userId},#{userName},#{userPwd},#{userTel},#{userNick},#{userMail},#{userTag},#{profileImg})
+</insert>
+
+
+<!-- DB: userForm -->
+<insert id="insertData" parameterType="com.spring.boot.dto.MypageDTO">
+	insert into userForm (num,userId,userPwd,userNick,userMail,userTag,saveName,originalName,created,point,grade) 
+	values (#{num},#{userId},#{userPwd},#{userNick},#{userMail},#{userTag},#{saveName},#{originalName},sysdate,3000,'Welcome')
+</insert>
+
+
+<!-- DB: myPet -->
+<insert id="insertPetData" parameterType="com.spring.boot.dto.MypetDTO">
+	insert into myPet (num,userId,petCate,petKind,petName,petGender,petAge,petWeight,saveName,originalName,petNeuter,petDisease,petAllergy)
+	values (#{num},#{userId},#{petCate},#{petKind},#{petName},#{petGender},#{petAge},#{petWeight},#{saveName},#{originalName},#{petNeuter},#{petDisease},#{petAllergy})
+</insert>
+
+<!-- DB: inquiry -->
+<insert id="insertQuiryData" parameterType="com.spring.boot.dto.InquiryDTO">
+	insert into inquiry (num,userId,inquiryCate,inquiryContent,saveName,originalName,created)
+	values (#{num},#{userId},#{inquiryCate},#{inquiryContent},#{saveName},#{originalName},sysdate) 
+</insert>
+
+<!-- DB: userAddress -->
+<insert id="insertAddress" parameterType="com.spring.boot.dto.UserAddressDTO">
+	insert into userAddress (num,userId,userName,addressAlias,Region,streetAddress,detailAddress,City,phoneNumber)
+	values (#{num},#{userId},#{userName},#{addressAlias},#{Region},#{streetAddress},#{detailAddress},#{City},#{phoneNumber})
+</insert>
+
+<!-- DB: userCard -->
+<insert id="insertCardData" parameterType="com.spring.boot.dto.UserCardDTO">
+	insert into userCard (num,userId,userName,cardName,cardNum,cardValid,saveName,originalName)
+	values (#{num},#{userId},#{userName},#{cardName},#{cardNum},#{cardValid},#{saveName},#{originalName})
+</insert>
+
+<!-- DB: zzimList -->
+<insert id="insertZzimData" parameterType="com.spring.boot.dto.UserzzimListDTO">
+	insert into zzimList (snum,num,categoryName,userId)
+	values (#{snum},#{num},#{categoryName},#{userId})
+</insert>
+
+
+<!-- 찜테스트 -->
+
+
+<!-- 카테고리별로 찜한 수 -->
+<select id="getZzimCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from zzimList
+	where userId=#{userId} and categoryName=#{categoryName}
+</select>
+
+<!-- 찜 리스트 -->
+<select id="getZzimList" parameterType="hashMap" resultType="com.spring.boot.dto.UserzzimListDTO">
+	select snum,num,categoryName,userId from zzimList where userId=#{userId}
+</select>
+
+<!-- 찜 리스트 -->
+<select id="getZzimList2" parameterType="hashMap" resultType="com.spring.boot.dto.UserzzimListDTO">
+	select snum,num,categoryName,userId from zzimList where userId=#{userId} and categoryName=#{categoryName}
+</select>
+
+
+
+<!-- 장바구니 -->
+
+
+
+<!-- 장바구니 리스트 -->
+<select id="getWishList" parameterType="hashMap" resultType="com.spring.boot.dto.MyWishListDTO">
+	select snum,num,userId from wishList where userId=#{userId}
+</select>
+
+<!-- DB : wishList -->
+<insert id="insertWishList" parameterType="com.spring.boot.dto.MyWishListDTO">
+	insert into wishList (snum,num,userId) values (#{snum},#{num},#{userId}) 
+</insert>
+
+
+
+
+<!-- 내 정보 가져오기 -->
+<select id="getReadData"  resultType="com.spring.boot.dto.MypageDTO">
+	select userId,userPwd,userNick,userMail,userTag,saveName,point,grade
+	from userForm where userId=#{userId}
+</select>
+
+<!-- 펫 정보 가져오기 -->
+<select id="getReadPetData" resultType="com.spring.boot.dto.MypetDTO">
+	select petName,petCate,petKind,petGender,petAge,petWeight,saveName,petNeuter,petDisease,petAllergy
+	from myPet where userId=#{userId}  
+</select> 
+
+<!-- 펫 정보 (리스트) -->
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.MypetDTO">
+	select petName,petCate,petKind,petGender,petAge,petWeight,saveName,petNeuter,petDisease,petAllergy
+	from myPet where userId=#{userId}
+</select>
+
+<!-- 펫정보를 펫이름으로 가져오기 -->
+<select id="getReadPetData2" resultType="com.spring.boot.dto.MypetDTO">
+	select petName,petCate,petKind,petGender,petAge,petWeight,saveName,petNeuter,petDisease,petAllergy
+	from myPet where petName=#{petName}  
+</select>
+
+<!-- 문의 리스트 -->
+<select id="getInquiryList" parameterType="hashMap" resultType="com.spring.boot.dto.InquiryDTO">
+	select userId,inquiryCate,inquiryContent,created from inquiry where userId=#{userId}
+</select>
+
+
+<!-- 배송지 리스트 -->
+<select id="getAddressList" parameterType="hashMap" resultType="com.spring.boot.dto.UserAddressDTO">
+	select userId,userName,addressAlias,Region,streetAddress,detailAddress,City,phoneNumber
+	from userAddress where userId=#{userId}
+</select>
+
+<!-- 배송지 정보 -->
+<select id="getReadAddressData" resultType="com.spring.boot.dto.UserAddressDTO">
+	select userName,addressAlias,Region,streetAddress,detailAddress,City,phoneNumber
+	from userAddress where userId=#{userId} and addressAlias=#{addressAlias}
+</select>
+
+<!-- 카드 리스트 -->
+<select id="getCardList" parameterType="hashMap" resultType="com.spring.boot.dto.UserCardDTO">
+	select num,userId,userName,cardName,cardNum,cardValid,saveName
+	from userCard where userId=#{userId}
+</select>
+
+<!-- 카드 정보 -->
+<select id="getReadCardData" resultType="com.spring.boot.dto.UserCardDTO">
+	select userId,userName,cardName,cardNum,cardValid,saveName
+	from userCard where userId=#{userId} and cardNum=#{cardNum}
+</select>
+
+
+<!-- 등록한 펫 수 -->
+<select id="getPetCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from myPet
+	where userId=#{userId}
+</select>
+
+<!-- 등록한 문의 글 수 -->
+<select id="getInquiryCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from inquiry
+	where userId=#{userId}
+</select>
+
+<!-- 등록한 배송지 수 -->
+<select id="getAddressCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from userAddress
+	where userId=#{userId}
+</select>
+
+<!-- 등록한 카드 수 -->
+<select id="getCardCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from userCard
+	where userId=#{userId}
+</select>
+
+
+ 
+<!-- 내정보 수정 -->
+<update id="updateData" parameterType="com.spring.boot.dto.MypageDTO">
+	update userForm set saveName=#{saveName},originalName=#{originalName},userMail=#{userMail},userNick=#{userNick}
+	where userId=#{userId}
+</update>
+
+<!-- 태그는 따로 -->
+<update id="updateTag" parameterType="hashMap">
+	update userForm set userTag=#{userTag} where userId=#{userId}
+</update>
+
+
+<!-- 비번 수정 -->
+<update id="updatePwd" parameterType="com.spring.boot.dto.MypageDTO">
+	update userForm set userPwd=#{userPwd}
+	where userId=#{userId}
+</update>
+
+<!-- 배송지 수정 -->
+<update id="updateAddress" parameterType="com.spring.boot.dto.UserAddressDTO">
+	update userAddress set userName=#{userName},addressAlias=#{addressAlias},Region=#{Region},streetAddress=#{streetAddress},detailAddress=#{detailAddress}
+	City=#{City},phoneNumber=#{phoneNumber} where userId=#{userId} and addressAlias=#{addressAlias}
+</update>
+
+
+
+
+<!-- 문의 삭제 -->
+<delete id="deleteInquiry" parameterType="com.spring.boot.dto.InquiryDTO">
+	delete from inquiry where userId=#{userId} and inquiryContent=#{inquiryContent}
+</delete>
+
+<!-- 배송지 삭제 -->
+<delete id="deleteAddress" parameterType="com.spring.boot.dto.UserAddressDTO">
+	delete from userAddress where addressAlias=#{addressAlias}
+</delete>
+
+<!-- 카드 삭제 -->
+<delete id="deleteCard" parameterType="com.spring.boot.dto.UserCardDTO">
+	delete from userCard where userId=#{userId} and cardNum=#{cardNum}
+</delete>
+
+
+
+<!-- 탈퇴 -->
+<delete id="deleteData" parameterType="com.spring.boot.dto.MypageDTO">
+	delete from userForm where userId=#{userId}
+</delete>
+
+<delete id="deletePetData" parameterType="com.spring.boot.dto.MypageDTO">
+	delete from myPet where userId=#{userId}
+</delete>
+
+
+</mapper>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.boot.mapper.CommunityMapper">
+
+<select id="maxNum_Commu" resultType="int">
+	select nvl(max(num),0) from community
+</select>
+
+<insert id="insertData_Commu" parameterType="com.spring.boot.dto.CommunityDTO">
+	insert into community ( num ,title ,userName ,content, link,
+	category, ip ,likes, hitCount, created, savePicture, saveName) values (#{num} ,#{title} ,#{userName} ,#{content}, #{link},
+	#{category}, #{ip} , 0 , 0 , sysdate, #{savePicture}, #{saveName})
+</insert>
+
+<select id="getDataCount_Commu" parameterType="hashMap" resultType="int">
+	select nvl(count(*),0) from community
+	where category like '%' || #{searchValue} || '%'
+</select>
+
+<select id="getLists_Commu" parameterType="hashMap" resultType="com.spring.boot.dto.CommunityDTO">
+
+	select * from (
+	select rownum rnum, data.* from(
+	select num ,title ,userName ,content, link,	category, ip ,likes, hitCount, to_char(created , 'YYYY-MM-DD') created, savePicture, saveName
+	from community where category like '%' || #{searchValue} || '%'
+	order by num desc) data) 
+	
+	<![CDATA[
+	where rnum>=#{start} and rnum<=#{end}
+	]]>
+	
+</select>
+
+<update id="updateHitCount_Commu" parameterType="int">
+	update community set hitCount = hitCount + 1 where num = #{num}
+</update>
+
+<!-- 좋아요 누름 -->
+<update id="uplikes" parameterType="int">
+	update community set likes = likes + 1 where num = #{num}
+</update>
+
+<!-- 좋아요 취소 -->
+<update id="downlikes" parameterType="int">
+	update community set likes = likes - 1 where num = #{num}
+</update>
+
+<select id="getReadData_Commu" parameterType="int" resultType="com.spring.boot.dto.CommunityDTO">
+	
+	select num ,title ,userName ,content, link,	category, ip ,likes, hitCount, to_char(created , 'YYYY-MM-DD') created, savePicture, saveName
+	from community where num=#{num}
+	
+</select>
+
+<update id="updateData_Commu" parameterType="com.spring.boot.dto.CommunityDTO">
+
+	update community set title=#{title},content=#{content}, savePicture=#{savePicture}, saveName=#{saveName} where num=#{num}
+	
+</update>
+
+<delete id="deleteData_Commu" parameterType="int">
+
+	delete community where num=#{num}
+	
+</delete>
+
+<!-- 유저 정보 가져오는 부분 -->
+
+<select id="getReadUserData" parameterType="String" resultType="com.spring.boot.dto.MypageDTO">
+	
+	select num ,userId ,userPwd ,userNick, userMail, to_char(created, 'YYYY-MM-DD'), saveName, originalName , grade , point , userTag 
+	from USERFORM where userId=#{userId}
+	
+</select>
+
+<select id="getUserLists" parameterType="hashMap" resultType="com.spring.boot.dto.MypageDTO">
+
+	select * from (
+	select rownum rnum, data.* from(
+	select num ,userId ,userPwd ,userNick, userMail, to_char(created, 'YYYY-MM-DD'), saveName, originalName  , grade , point , userTag 
+	from userForm order by num desc) data) 
+	
+</select>
+
+<!-- (likes 테이블)좋아요 체크하는 부분 -->
+
+<select id="likesmaxNum" resultType="int">
+	select nvl(max(lno),0) from likes
+</select>
+
+<select id = "checkLike" resultType="int">
+	select count(*) from likes where cno=#{cno} and userId = #{userId}
+</select>
+
+<insert id="communityLikes_insert" parameterType="com.spring.boot.dto.CommunityLikesDTO">
+	insert into likes values (#{lno}, #{cno}, #{userId}, #{userNick})
+</insert>
+
+<delete id="communityLikes_delete" parameterType="hashMap">
+	delete likes where cno=#{cno} and userId=#{userId}
+</delete>
+
+<select id="getLikeLists" parameterType="hashMap" resultType="com.spring.boot.dto.CommunityLikesDTO">
+
+	select * from (
+	select rownum rnum, data.* from(
+	select lno ,cno, userId, userNick
+	from likes where userId = #{userId} order by lno ) data)
+	
+</select>
+<!-- 찜 -->
+<select id="com_zzimMaxNum" resultType="int">
+	select nvl(max(snum), 0) from zzimList
+</select>
+<insert id="com_zzim_insert" parameterType="com.spring.boot.dto.ZzimListDTO">
+	insert into zzimList values(#{snum}, #{num}, #{categoryName}, #{userId})
+</insert>
+<delete id="com_zzim_delete" parameterType="hashMap">
+	delete zzimList where num=#{num} and userId=#{userId}
+</delete>
+<select id="getZzimLists" parameterType="hashMap" resultType="com.spring.boot.dto.ZzimListDTO">
+	
+	select * from (
+	select rownum rnum, data.* from(
+	select snum, num, categoryName, userId
+	from zzimList where userId = #{userId} order by snum ) data)
+	
+</select>
+
+<!-- 댓글 -->
+
+<select id="com_commentMaxNum" resultType="int">
+	select nvl(max(num), 0) from communityComment
+</select>
+
+<insert id="com_comment_insert" parameterType="com.spring.boot.dto.CommunityCommentDTO">
+	insert into communityComment values(#{num}, #{userId}, #{userNick}, #{communityNum}, #{contents}, sysdate)
+</insert>
+
+<delete id="com_comment_delete" parameterType="hashMap">
+	delete communityComment where communityNum=#{communityNum} and userId=#{userId}
+</delete>
+
+<select id="getcom_Comment_Lists" parameterType="hashMap" resultType="com.spring.boot.dto.CommunityCommentDTO">
+
+	select * from (
+	select rownum rnum, data.* from(
+	select num, userId, userNick, communityNum, contents, created
+	from communityComment where communityNum = #{communityNum} order by num ) data)
+	
+</select>
+
+<select id="com_comment_count" resultType="int">
+	select count(*) from communityComment where communityNum=#{communityNum}
+</select>
+
+<update id="com_comment_change" parameterType="com.spring.boot.dto.CommunityCommentDTO">
+	update communityComment set contents=#{contents}
+</update>
+
+
+<!-- 개인 디비 -->
+<select id="com_userCount" resultType="int">
+	select count(*) from community where userName = #{userId}
+</select>
+
+<select id="com_MyUserListData" parameterType="hashMap" resultType="com.spring.boot.dto.CommunityDTO">
+	
+	select * from (
+	select rownum rnum, data.* from(
+	select num ,title ,userName ,content, link,	category, ip ,likes, hitCount, to_char(created , 'YYYY-MM-DD') created, savePicture, saveName
+	from community where userName=#{userName}
+	order by num desc) data) 
+	
+	<![CDATA[
+	where rnum>=#{start} and rnum<=#{end}
+	]]>
+	
+</select>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

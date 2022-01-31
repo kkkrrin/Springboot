@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.TermsMapper">
+
+<select id="maxNum" resultType="int">
+	select nvl(max(t_num),0) from pet_terms
+</select>
+
+<insert id="insertData" parameterType="com.spring.boot.dto.TermsDTO">
+	insert into pet_terms (t_num, t_title, t_content, t_cat, t_startdate)
+	values (#{t_num},#{t_title},#{t_content},#{t_cat},#{t_startdate})
+</insert>
+
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.TermsDTO">
+	select t_num, t_title, t_content, t_cat, to_char(t_startdate,'yyyy.MM.dd') t_startdate
+	from pet_terms 
+	order by t_num asc 
+</select>
+
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.TermsDTO">
+	select t_num, t_title, t_content, t_cat, to_char(t_startdate,'yyyy.MM.dd') t_startdate
+	from pet_terms where t_num=#{t_num} 
+</select>
+
+
+
+</mapper>

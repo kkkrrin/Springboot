@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.StoreMapper">
+<!--  -->
+<select id="maxNum" resultType="int">
+	select nvl(max(num),0) from aboutpetstore
+</select>
+
+<select id="maxProductNum" resultType="int">
+	select nvl(max(productNum),1000) from aboutpetstore
+</select>
+
+<!-- 판매자가 상품 등록 -->
+<insert id="insertData" parameterType="com.spring.boot.dto.StoreDTO">
+	insert into aboutpetstore (num,brand,productName,price,mainCategory,subCategory,tag,discount,deliveryInfo,hitCount,created,fileUrl,fileName,fileOriName,userId,productNum) values 
+	(#{num},#{brand},#{productName},#{price},#{mainCategory},#{subCategory},#{tag},#{discount},#{deliveryInfo},0,sysdate,#{fileUrl},#{fileName},#{fileOriName},#{userId},#{productNum})
+</insert>
+
+
+<select id="getDataCount" parameterType="hashMap" resultType="int">
+	select nvl(count(*),0) from aboutpetstore where ${searchKey} like '%' || #{searchValue} || '%'
+</select>
+
+
+
+<select id="getLists" parameterType="hashMap" resultType="com.spring.boot.dto.StoreDTO">
+	select * from (select rownum rnum, data.* from (select num,brand,productName,price,discount,fileName,fileUrl,fileOriName,userId,productNum,(price-discount) total 
+	from aboutpetstore where ${searchKey} like '%' || #{searchValue} || '%'
+	order by num desc) data)
+<![CDATA[
+	where rnum>=#{start} and rnum<=#{end}
+]]>
+</select>
+
+
+<!-- 제품 조회수 증가 -->
+<update id="updateHitCount" parameterType="int">
+	update aboutpetstore set hitCount=hitCount+1 where num=#{num}
+</update>
+
+
+<!-- 한개의 제품정보 찾기 -->
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.StoreDTO">
+	select num,brand,productName,mainCategory,subCategory,tag,discount,deliveryInfo,hitCount,created,price,fileName,fileUrl,fileOriName,userId,productNum 
+	from aboutpetstore where num=#{num}
+</select>
+
+<!-- 제품정보 수정 -->
+<update id="updateData" parameterType="com.spring.boot.dto.StoreDTO">
+	update aboutpetstore set brand=#{brand},productName=#{productName},price=#{price},discount=#{discount},
+	mainCategory=#{mainCategory},subCategory=#{subCategory},tag=#{tag},
+	deliveryInfo=#{deliveryInfo},fileName=#{fileName},fileUrl=#{fileUrl},fileOriName=#{fileOriName} where num=#{num}
+</update>
+
+<!-- 제품삭제 -->
+<delete id="deleteData" parameterType="int">
+	delete aboutpetstore where num=#{num}
+</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <select id="maxNum11" resultType="int">
+	select nvl(max(num),0) from aboutpetstorejjim
+</select> -->
+
+<!-- <select id="maxProductNum11" resultType="int">
+	select nvl(max(productNum),1000) from aboutpetstorejjim
+</select> -->
+
+<!-- <insert id="insertData11" parameterType="aboutpetStore.spring.boot.dto.StorejjimDTO">
+insert into aboutpetstorejjim (cart_num, cart_userId,cart_productNum,amount) values (seq.cart.NEXTVAL,#{cart_userId},#{cart_productNum},#{amount})
+</insert> -->
+
+<!-- <select id="getDataCount11" parameterType="hashMap" resultType="int">
+	select nvl(count(*),0) from aboutpetstorejjim where ${searchKey} like '%' || #{searchValue} || '%'
+</select> -->
+
+<!--  cart_num==cartId 장바구니번호
+ cart_userId= 사용자 아이디
+ cart_productNum = productNum=product_id =상품번호 -->
+<!-- 
+<select id="getLists11" parameterType="hashMap" resultType="aboutpetStore.spring.boot.dto.StorejjimDTO">
+select 
+c.cart_num as cart_num,
+c.cart_userId as cart_userId
+s.productNum as productNum,
+s.productName as productName,
+c.amount,
+p.price as price, (price*amount) Money 
+from userForm u, aboutpetstore s, aboutpetstorejjim c 
+where u.userId = c.cart_userId 
+and s.productNum = c.cart_num 
+and c.cart_userId= #{userId} order by c.cart_num
+ 
+</select>
+
+
+
+제품 조회수 증가
+<update id="updateHitCount11" parameterType="int">
+	update aboutpetstorejjim set hitCount=hitCount+1 where num=#{num}
+</update>
+
+
+한개의 제품정보 찾기
+<select id="getReadData11" parameterType="int" resultType="aboutpetStore.spring.boot.dto.StorejjimDTO">
+	select num,brand,productName,mainCategory,subCategory,tag,discount,deliveryInfo,hitCount,created,price,fileName,fileUrl,fileOriName,userId,productNum 
+	from aboutpetstorejjim where num=#{num}
+</select>
+
+제품정보 수정
+<update id="updateData11" parameterType="aboutpetStore.spring.boot.dto.StorejjimDTO">
+	update aboutpetstorejjim set brand=#{brand},productName=#{productName},price=#{price},
+	mainCategory=#{mainCategory},subCategory=#{subCategory},tag=#{tag},
+	deliveryInfo=#{deliveryInfo},fileName=#{fileName},fileUrl=#{fileUrl},fileOriName=#{fileOriName} where num=#{num}
+</update>
+
+제품삭제
+<delete id="deleteData11" parameterType="int">
+	delete aboutpetstorejjim where num=#{num}
+</delete>
+ -->
+
+
+
+
+
+</mapper>

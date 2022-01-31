@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.boot.mapper.UserMapper">
+
+
+<select id="maxNum" resultType="int">
+	select nvl(max(num),0) from userForm
+</select>
+
+<insert id="insertData" parameterType="com.spring.boot.dto.MypageDTO">
+	insert into userForm (num, userId ,userPwd,userNick,userMail,
+	created ,grade,point) values (#{num},#{userId},#{userPwd},
+	#{userNick},#{userMail},sysdate,0,0)
+</insert>
+
+
+<update id="updateTag" parameterType="hashMap">
+	
+	update userForm set userTag = #{userTag} where userId = #{userId}
+
+</update>
+
+
+
+<select id="loginId" resultType="int">
+
+	select count(*) from userForm where userId = #{userId} and userPwd = #{userPwd}
+
+</select>
+
+<select id="findChk" resultType="int">
+
+	select count(*) from userForm where userMail = #{userMail}
+
+</select>
+
+<select id="findId" resultType="String">
+
+	select userId from userForm where userMail = #{userMail}
+
+</select>
+
+<select id="findPwd" resultType="int">
+
+	select count(*) from userForm where userId = #{userId} and userMail = #{userMail}
+
+</select>
+
+<select id="pwdChk" resultType="String">
+	
+	select userPwd from userForm  where userId = #{userId}
+	
+</select>
+
+
+<update id="changePwd" parameterType="hashMap">
+	
+	update userForm set userPwd = #{userPwd} where userId = #{userId}
+
+</update>
+
+
+
+<select id="idCheck" parameterType="String" resultType="Integer">
+        SELECT count(*)
+        FROM userForm
+        WHERE userId = #{userId}
+</select>
+
+<select id = "nickCheck" parameterType="String" resultType="Integer">
+        SELECT count(*)
+        FROM userForm
+        WHERE userNick = #{userNick}
+</select>
+
+<select id="getReadData" parameterType="int" resultType="com.spring.boot.dto.MypageDTO">
+	select userId ,userPwd,userNick,userMail,
+	created,userTag,grade,point where userId=#{userId}
+
+</select>
+
+
+
+
+
+</mapper>
